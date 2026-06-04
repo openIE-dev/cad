@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_42 tools registered._
+_44 tools registered._
 
 ---
 
@@ -223,6 +223,38 @@ Export bodies as Salome XAO (BREP payload + topology + groups). \ Argument `name
 Generate Bill of Materials
 
 **No arguments.**
+
+---
+
+## `generate_contour_gcode`
+
+Wave 70.B — follow an arbitrary 2D path at successive Z depths. \ Caller supplies `path_mm` (array of [x,y] waypoints in mm). At each \ Z level the tool follows the path in order; `closed: true` adds a \ closing move back to the first waypoint (perimeter milling). No \ cutter compensation — caller offsets the path by the cutter radius. \ Args: `path_mm` (required, array of [x,y]), `depth_mm` (default 5), \ `step_down_mm` (default 1), `closed` (default true), \ `feedrate_mm_min` (default 800), `plunge_rate_mm_min` (default 200), \ `spindle_rpm` (default 10000), `safe_z_mm` (default 5).
+
+**Arguments**
+
+- `path_mm` *(array)*
+- `depth_mm` *(number)*
+- `step_down_mm` *(number)*
+- `closed` *(boolean)*
+- `feedrate_mm_min` *(number)*
+- `plunge_rate_mm_min` *(number)*
+- `spindle_rpm` *(number)*
+- `safe_z_mm` *(number)*
+
+---
+
+## `generate_drill_gcode`
+
+Wave 70.B — drill a list of holes. Args: `positions_mm` (required, \ array of [x,y]), `depth_mm` (default 5), `peck_increment_mm` \ (optional; when set, enables G83-style peck drilling with full \ retract between pecks), `plunge_rate_mm_min` (default 200), \ `spindle_rpm` (default 10000), `safe_z_mm` (default 5).
+
+**Arguments**
+
+- `positions_mm` *(array)*
+- `depth_mm` *(number)*
+- `peck_increment_mm` *(number)*
+- `plunge_rate_mm_min` *(number)*
+- `spindle_rpm` *(number)*
+- `safe_z_mm` *(number)*
 
 ---
 
