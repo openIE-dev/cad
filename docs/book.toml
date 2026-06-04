@@ -1,0 +1,25 @@
+[book]
+title = "openie-cad"
+authors = ["openIE-dev"]
+description = "Rust-first, WASM-native CAD + ECAD + Multi-Physics simulation engine"
+language = "en"
+multilingual = false
+src = "src"
+
+[output.html]
+default-theme = "navy"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/openIE-dev/cad"
+edit-url-template = "https://github.com/openIE-dev/cad/edit/main/docs/{path}"
+site-url = "/"
+no-section-label = true
+
+[output.html.search]
+enable = true
+limit-results = 20
+use-boolean-and = true
+boost-title = 2
+boost-hierarchy = 1
+boost-paragraph = 1
+expand = true
+heading-split-level = 3
