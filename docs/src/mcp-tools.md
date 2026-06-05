@@ -131,12 +131,14 @@ Create a cylinder with radius and height in mm
 
 ## `deepcad_forward`
 
-Wave 74.B — pure-Rust forward pass through the DeepCAD command-\ sequence decoder (Wu et al. ICCV 2021), implemented in Candle. \ Substrate-side architecture lives in cad-deepcad: 6-token vocab, \ 256-d embedding, 4-layer transformer, 256-bin arg quantization \ matching the paper. Weights are randomly initialized in Wave 74.B; \ Wave 74.C will swap in the MIT-licensed DeepCAD .pt → safetensors \ path so this tool produces real image-conditioned CAD command \ sequences. The whole inference path stays single-binary Rust — no \ Python, no PyTorch runtime, no Torch C++ linking. Args: \ `batch` (int, default 1), `seq_len` (int, default 8).
+Wave 74.B — pure-Rust forward pass through the DeepCAD command-\ sequence decoder (Wu et al. ICCV 2021), implemented in Candle. \ Substrate-side architecture lives in cad-deepcad: 6-token vocab, \ 256-d embedding, 4-layer transformer, 256-bin arg quantization \ matching the paper. Weights are randomly initialized in Wave 74.B; \ Wave 74.C will swap in the MIT-licensed DeepCAD .pt → safetensors \ path so this tool produces real image-conditioned CAD command \ sequences. The whole inference path stays single-binary Rust — no \ Python, no PyTorch runtime, no Torch C++ linking. Wave 74.C wires \ weight loading from `.safetensors` and PyTorch `.pt` files (both \ via Candle's pure-Rust loaders). Args: `batch` (int, default 1), \ `seq_len` (int, default 8), `weights_path` (string, optional — \ file path; .safetensors uses mmap, .pt/.pth uses pickle reader; \ omit for random init), `state_key` (string, optional — for nested \ .pt files like `{"model": <state_dict>}`).
 
 **Arguments**
 
 - `batch` *(integer)*
 - `seq_len` *(integer)*
+- `weights_path` *(string)*
+- `state_key` *(string)*
 
 ---
 
