@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_45 tools registered._
+_46 tools registered._
 
 ---
 
@@ -126,6 +126,17 @@ Create a cylinder with radius and height in mm
 
 - `radius` *(number)*
 - `height` *(number)*
+
+---
+
+## `deepcad_forward`
+
+Wave 74.B — pure-Rust forward pass through the DeepCAD command-\ sequence decoder (Wu et al. ICCV 2021), implemented in Candle. \ Substrate-side architecture lives in cad-deepcad: 6-token vocab, \ 256-d embedding, 4-layer transformer, 256-bin arg quantization \ matching the paper. Weights are randomly initialized in Wave 74.B; \ Wave 74.C will swap in the MIT-licensed DeepCAD .pt → safetensors \ path so this tool produces real image-conditioned CAD command \ sequences. The whole inference path stays single-binary Rust — no \ Python, no PyTorch runtime, no Torch C++ linking. Args: \ `batch` (int, default 1), `seq_len` (int, default 8).
+
+**Arguments**
+
+- `batch` *(integer)*
+- `seq_len` *(integer)*
 
 ---
 
