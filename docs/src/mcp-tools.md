@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_46 tools registered._
+_49 tools registered._
 
 ---
 
@@ -149,6 +149,21 @@ Delete a body by its UUID
 **Arguments**
 
 - `body_id` *(string)*
+
+---
+
+## `design_lqr`
+
+Wave 75.C — design a discrete-time infinite-horizon Linear-\ Quadratic Regulator via iterated DARE (Discrete Algebraic Riccati \ Equation). For x_{k+1} = A x + B u and cost Σ (x^T Q x + u^T R u), \ returns the optimal feedback gain K such that u = -K x is the \ stabilising optimal policy. Closed-loop spectral radius is \ reported; values strictly under 1 mean (A, B) is stabilisable with \ the chosen Q, R. Args: `a`, `b`, `q`, `r` (matrices, required), \ `max_iter` (int, default 500), `tol` (number, default 1e-10).
+
+**Arguments**
+
+- `a` *(array)*
+- `b` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
 
 ---
 
@@ -406,6 +421,24 @@ Zener-pipeline completer: imports a `.zen` file's schematic + netlist AND \ over
 
 ---
 
+## `kalman_step`
+
+Wave 75.B — single predict+update step of a linear Kalman filter \ for x_{k+1} = F x + B u + w, y = H x + v with w ~ N(0, Q), \ v ~ N(0, R). Stateless from the caller's POV: pass in current \ (x, P, u, y) and the matrices (F, B, H, Q, R); receive back the \ new posterior mean, covariance, and innovation. B and u may be \ omitted for autonomous systems. Args: `f`, `h`, `q`, `r`, `p` \ (matrices, required), `x`, `y` (vectors, required), `b` (matrix, \ optional), `u` (vector, optional).
+
+**Arguments**
+
+- `f` *(array)*
+- `h` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `p` *(array)*
+- `x` *(array)*
+- `y` *(array)*
+- `b` *(array)*
+- `u` *(array)*
+
+---
+
 ## `parse_ocl`
 
 Parse an OCL source string
@@ -528,6 +561,21 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `solve_qp`
+
+Wave 75.A — solve a convex quadratic program via Clarabel.rs \ (pure Rust, Apache-2.0). Problem: minimize (1/2) x^T P x + q^T x \ subject to A_eq x = b_eq and A_ineq x ≤ b_ineq. P must be symmetric \ PSD. Matrices are JSON nested arrays; vectors are flat JSON arrays. \ Equality and inequality blocks are optional (omit / null = no \ constraints of that kind). Args: `p` (matrix, required), `q` \ (vector, required), `a_eq` (matrix, optional), `b_eq` (vector, \ optional), `a_ineq` (matrix, optional), `b_ineq` (vector, optional). \ Returns x*, objective, status, iterations.
+
+**Arguments**
+
+- `p` *(array)*
+- `q` *(array)*
+- `a_eq` *(array)*
+- `b_eq` *(array)*
+- `a_ineq` *(array)*
+- `b_ineq` *(array)*
 
 ---
 
