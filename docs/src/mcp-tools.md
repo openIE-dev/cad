@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_44 tools registered._
+_45 tools registered._
 
 ---
 
@@ -325,6 +325,16 @@ Atopile-pipeline completer: imports a `.ato` file's schematic + netlist \ AND ov
 - `atopile_source` *(string)*
 - `kicad_pcb_source` *(string)*
 - `name` *(string)*
+
+---
+
+## `import_deepcad`
+
+Wave 72 — ingest a DeepCAD command-sequence JSON (Wu et al. ICCV \ 2021; output format of GenCAD, arXiv 2409.16294 MIT DECODE Lab). \ Pure-Rust parser + lifter: no Python / PyTorch / OpenCascade runtime, \ no ML bloat in the eval path. Each `SOL..EOS..Ext` operation block is \ lifted to a cad-kernel primitive (rectangular sketches → box, \ circular sketches → cylinder) and the Wave 72 boolean op \ (NewBody / Join / Cut / Intersect) is applied against the prior body. \ Args: `json` (string, required, the DeepCAD command-sequence JSON).
+
+**Arguments**
+
+- `json` *(string)*
 
 ---
 
