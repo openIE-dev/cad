@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_49 tools registered._
+_50 tools registered._
 
 ---
 
@@ -561,6 +561,26 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `solve_lti_mpc`
+
+Wave 76.A — solve one step of a linear time-invariant MPC \ via condensed-form QP. Problem: minimize Σ (x^T Q x + u^T R u) \ + x_N^T Qf x_N s.t. x_{k+1} = A x + B u, x_0 = given, optional \ box constraints on u and x. The decision variables are the \ control sequence u_0..u_{N-1}; the predicted state trajectory \ is reconstructed. Returns the full sequence + cost + status. \ For receding-horizon use, call repeatedly with the updated x0. \ If `qf` is omitted, the infinite-horizon LQR cost-to-go P∞ for \ (A, B, Q, R) is auto-synthesized as terminal cost, so even \ short horizons inherit LQR-grade stabilising behaviour. \ Args: `a`, `b`, `q`, `r` (matrices, required), `qf` (matrix, \ optional), `horizon` (int, default 10), `x0` (vector, required), \ `u_min`/`u_max`/`x_min`/`x_max` (vectors, optional).
+
+**Arguments**
+
+- `a` *(array)*
+- `b` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `horizon` *(integer)*
+- `x0` *(array)*
+- `u_min` *(array)*
+- `u_max` *(array)*
+- `x_min` *(array)*
+- `x_max` *(array)*
 
 ---
 
