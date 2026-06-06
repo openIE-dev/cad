@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_50 tools registered._
+_51 tools registered._
 
 ---
 
@@ -561,6 +561,29 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `solve_bicycle_mpc`
+
+Wave 76.C/D — solve iterative MPC for the kinematic bicycle \ with optional circular-obstacle avoidance. State x = (X, Y, \ ψ, v) in m, m, rad, m/s. Control u = (a, δ) in m/s² and rad. \ The outer loop linearizes around the nominal trajectory and \ re-solves until the control sequence converges (Σ ‖Δu_k‖ < \ tol) or max_iter is reached. Each obstacle adds a soft \ half-plane constraint per horizon step (linearized keep-out + \ slack penalty) so the solver gracefully handles initial \ nominals that cut through obstacles. \ Args: `wheelbase` (m, default 0.3), `dt` (s, default 0.1), \ `horizon` (int, default 15), `q`/`r`/`qf` (matrices, required: \ 4×4 / 2×2 / 4×4), `x0` (length-4 vector, required), `x_ref` \ (horizon+1 length array of 4-vectors, required), `u_ref` \ (horizon length array of 2-vectors, required), `u_min`/`u_max` \ (length-2 vectors, optional), `max_iter` (int, default 6), \ `tol` (float, default 1e-3), `obstacles` (array of objects \ `{x, y, radius, safety_margin?, slack_penalty?}`, optional). \ Returns u_seq, x_seq (under the true nonlinear dynamics), \ iterations, converged.
+
+**Arguments**
+
+- `wheelbase` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `x0` *(array)*
+- `x_ref` *(array)*
+- `u_ref` *(array)*
+- `u_min` *(array)*
+- `u_max` *(array)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `obstacles` *(array)*
 
 ---
 
