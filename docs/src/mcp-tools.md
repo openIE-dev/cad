@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_55 tools registered._
+_56 tools registered._
 
 ---
 
@@ -505,6 +505,22 @@ Render project.eda.pcb as an SVG board preview — outline, copper \ tracks per 
 - `scale` *(number)*
 - `margin_mm` *(number)*
 - `show_references` *(boolean)*
+
+---
+
+## `rl_policy_action`
+
+Wave 80.D — query a Candle-trained Gaussian MLP policy \ (Wave 80.A's GaussianMlpPolicy) for an action given a \ state. Loads weights via the same pure-Rust mmaped-\ safetensors path as cad-deepcad. Use this to deploy a \ policy trained by Wave 80.B/C's `train_vpg` / `train_ppo`, \ OR a policy trained externally (PyTorch / JAX) and \ exported to safetensors with the substrate's tensor \ naming convention (`fc1`, `fc2`, `mean_head`, `log_std`). \ Stateless across calls: caller threads the state. \ Args: `weights_path` (string, required, .safetensors path), \ `n_state` (int, required), `n_action` (int, required), \ `hidden` (int, default 64), `state` (length-`n_state` \ vector, required), `stochastic` (bool, default false — \ returns the mean if false, samples from the Gaussian if \ true), `seed` (int, optional — used when stochastic=true).
+
+**Arguments**
+
+- `weights_path` *(string)*
+- `n_state` *(integer)*
+- `n_action` *(integer)*
+- `hidden` *(integer)*
+- `state` *(array)*
+- `stochastic` *(boolean)*
+- `seed` *(integer)*
 
 ---
 
