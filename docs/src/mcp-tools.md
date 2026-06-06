@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_60 tools registered._
+_61 tools registered._
 
 ---
 
@@ -827,6 +827,29 @@ Wave 75.A — solve a convex quadratic program via Clarabel.rs \ (pure Rust, Apa
 - `b_eq` *(array)*
 - `a_ineq` *(array)*
 - `b_ineq` *(array)*
+
+---
+
+## `solve_quadrotor_hover`
+
+Wave 88.B — drive a planar VTOL quadrotor (PVTOL) to a \ hover setpoint via the substrate's iLQR. The PVTOL has 6 \ states (px, py, body-tilt θ, ẋ, ẏ, ω) and 2 controls \ (left and right rotor thrusts) — underactuated, so \ horizontal motion has to be commanded by tilting the \ body. Hover equilibrium is θ = 0, both rotors at m·g/2. \ Args: `mass` (kg, default 1.0), `arm_length` (m, body \ centre to rotor; default 0.25), `inertia` (kg·m², default \ 0.1), `gravity` (m/s², default 9.81), `dt` (s, default \ 0.02), `horizon` (int, default 30), `x0` (length-6, \ required), `x_target` (length-6, required). Optional \ cost: full matrices `q`/`r`/`qf` (defaults emphasise tilt \ and altitude). iLQR knobs `max_iter`/`tol`/`reg_init`. \ Returns rotor-thrust sequence + predicted state \ trajectory + hover_thrust_per_rotor for reference.
+
+**Arguments**
+
+- `mass` *(number)*
+- `arm_length` *(number)*
+- `inertia` *(number)*
+- `gravity` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `x0` *(array)*
+- `x_target` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `reg_init` *(number)*
 
 ---
 
