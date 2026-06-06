@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_58 tools registered._
+_59 tools registered._
 
 ---
 
@@ -740,6 +740,31 @@ Wave 77.B/C — bicycle Nonlinear MPC via OpEn's PANOC solver. \ Companion to so
 - `max_iter` *(integer)*
 - `tol` *(number)*
 - `lbfgs_memory` *(integer)*
+
+---
+
+## `solve_cartpole_stabilize`
+
+Wave 86.B — solve one step of receding-horizon iLQR to \ stabilize a cart-pole near its upright (unstable) \ equilibrium. The cart-pole is the canonical UNDERACTUATED \ control benchmark: 1 control (horizontal cart force) over \ 4 states (cart pos, pole angle, cart vel, pole ang-vel), \ with q2 = 0 the unstable equilibrium (pole upright). The \ substrate's iLQR (Wave 78) handles this without \ modifications — same algorithm as the bicycle and arm \ plants, fully nonlinear inertial coupling. \ Args: `cart_mass` (kg, default 1.0), `pole_mass` (kg, \ default 0.1), `pole_length` (m, default 0.5), `gravity` \ (m/s², default 9.81), `dt` (s, default 0.02), `horizon` \ (int, default 25), `x0` (length-4 vector required: \ cart_pos, pole_angle, cart_vel, pole_ang_vel; angles in \ rad), optional cost overrides via matrices `q`/`r`/`qf` \ OR scalar weights `q_cart`/`q_angle`/`r_force`, iLQR \ knobs `max_iter`/`tol`/`reg_init`. Returns cart-force \ sequence + predicted state trajectory.
+
+**Arguments**
+
+- `cart_mass` *(number)*
+- `pole_mass` *(number)*
+- `pole_length` *(number)*
+- `gravity` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `x0` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `q_cart` *(number)*
+- `q_angle` *(number)*
+- `r_force` *(number)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `reg_init` *(number)*
 
 ---
 
