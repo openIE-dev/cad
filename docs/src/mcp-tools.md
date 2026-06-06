@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_56 tools registered._
+_57 tools registered._
 
 ---
 
@@ -175,6 +175,24 @@ Estimate manufacturing cost
 
 - `quantity` *(number)*
 - `fab` *(string)*
+
+---
+
+## `estimate_mhe`
+
+Wave 81.A — Moving Horizon Estimation, the dual of MPC. \ Given a window of past noisy measurements (y_seq) and \ controls (u_seq) plus an arrival-cost prior (x_prior, p_0), \ returns the Bayesian-optimal smoothed state trajectory. On \ linear-Gaussian data the final-time estimate matches a \ Kalman filter run over the same window — but the QP framing \ extends to state bounds (later wave) and nonlinear plants \ (iterative LTV, like Wave 76's MPC, also a later wave). \ Args: `a` (n×n required), `b` (n×m optional — omit for \ autonomous), `c` (p×n required), `q_proc` (n×n required, \ process noise covariance), `r_meas` (p×p required, \ measurement noise covariance), `p_0` (n×n required, prior \ covariance), `x_prior` (length n required), `u_seq` (array \ of length-m vectors), `y_seq` (array of length-p vectors). \ horizon = y_seq.len(). Returns current_estimate, full x_seq, \ cost, iterations.
+
+**Arguments**
+
+- `a` *(array)*
+- `b` *(array)*
+- `c` *(array)*
+- `q_proc` *(array)*
+- `r_meas` *(array)*
+- `p_0` *(array)*
+- `x_prior` *(array)*
+- `u_seq` *(array)*
+- `y_seq` *(array)*
 
 ---
 
