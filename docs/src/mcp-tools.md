@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_52 tools registered._
+_53 tools registered._
 
 ---
 
@@ -561,6 +561,27 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `solve_bicycle_ilqr`
+
+Wave 78.A/B — bicycle trajectory optimization via iLQR \ (Iterative Linear Quadratic Regulator). Backward Riccati \ + forward line search; locally quadratic-convergent on \ smooth quadratic-cost problems — typically 5-20 outer \ iterations vs solve_bicycle_nmpc's ~200 PANOC iters. \ No box constraints in this variant (use solve_bicycle_mpc \ for hard control bounds, or solve_bicycle_nmpc for ball/box \ via PANOC projection). \ Args: `wheelbase` (m, default 0.3), `dt` (s, default 0.1), \ `horizon` (int, default 10), `q`/`r`/`qf` (matrices, \ required), `x0` (length-4 vector, required), `x_ref` \ (horizon+1 length array of 4-vectors, required), `u_ref` \ (horizon length array of 2-vectors, required), `max_iter` \ (int, default 30), `tol` (float, default 1e-6), `reg_init` \ (float, default 1e-4 — initial Tikhonov regularization on \ Q_uu; raised on backward-pass / line-search failures). \ Returns u_seq, x_seq, cost, iterations, converged.
+
+**Arguments**
+
+- `wheelbase` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `x0` *(array)*
+- `x_ref` *(array)*
+- `u_ref` *(array)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `reg_init` *(number)*
 
 ---
 
