@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_59 tools registered._
+_60 tools registered._
 
 ---
 
@@ -785,6 +785,33 @@ Wave 76.A — solve one step of a linear time-invariant MPC \ via condensed-form
 - `u_max` *(array)*
 - `x_min` *(array)*
 - `x_max` *(array)*
+
+---
+
+## `solve_n_link_arm_setpoint`
+
+Wave 87.C — receding-horizon iLQR for a planar n-link \ serial arm of any chain length. Uses the RNEA-based \ forward dynamics in cad-control (Wave 87.A) — same iLQR \ algorithm as solve_arm_setpoint, generalised to arbitrary \ n. The plant is built from a cad-assembly Mechanism (Wave \ 87.B bridge) so a CAD-designed robot arm with any number \ of joints feeds straight into the substrate. \ Args: `links` (array of {mass, length, com_offset, inertia} \ objects; required), `gravity` (m/s², optional), `dt` (s, \ default 0.01), `horizon` (int, default 25), `x0` (length \ 2·n: q₀…q_{n-1}, q̇₀…q̇_{n-1}; required), `x_target` (same \ length; required), `name` (optional). Cost can be supplied \ via matrices `q`/`r`/`qf` OR via scalar weights `q_pos`/`q_vel`/\ `r_torque`/`qf_pos`/`qf_vel`. iLQR knobs: `max_iter`/`tol`/\ `reg_init`. Returns joint-torque sequence (each length n) \ + predicted state trajectory (each length 2·n).
+
+**Arguments**
+
+- `name` *(string)*
+- `links` *(array)*
+- `gravity` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `x0` *(array)*
+- `x_target` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `q_pos` *(number)*
+- `q_vel` *(number)*
+- `r_torque` *(number)*
+- `qf_pos` *(number)*
+- `qf_vel` *(number)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `reg_init` *(number)*
 
 ---
 
