@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_57 tools registered._
+_58 tools registered._
 
 ---
 
@@ -614,6 +614,38 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `solve_arm_setpoint`
+
+Wave 85.C — solve setpoint regulation for a 2-DOF planar arm \ via the Wave 85.A PlanarTwoLinkArm plant + Wave 78 iLQR. \ The plant is built from a cad-assembly Mechanism (Wave 85.B \ bridge) — the same robot-arm model a CAD user designs in \ the assembly editor feeds straight into the optimal-control \ substrate, no manual dynamics derivation needed. \ Args: arm physical params m1, m2, l1, l2, lc1, lc2, i1, i2, \ gravity (all numbers, defaults to the textbook m=l=1, \ lc=0.5, i=0.1 arm with g=None for floating); `name` \ (string, optional), `dt` (s, default 0.01), `horizon` (int, \ default 30), `x0` (length-4 vector: q1, q2, qd1, qd2; \ required), `x_target` (length-4 vector; required), \ optional cost matrices `q`/`r`/`qf` or scalar weights \ `q_pos`/`q_vel`/`r_torque`, `max_iter` (default 50), \ `tol` (default 1e-6), `reg_init` (default 1e-2). \ Returns the joint-torque sequence τ_0..τ_{N-1} and the \ predicted state trajectory under the true nonlinear arm \ dynamics.
+
+**Arguments**
+
+- `name` *(string)*
+- `m1` *(number)*
+- `m2` *(number)*
+- `l1` *(number)*
+- `l2` *(number)*
+- `lc1` *(number)*
+- `lc2` *(number)*
+- `i1` *(number)*
+- `i2` *(number)*
+- `gravity` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `x0` *(array)*
+- `x_target` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `q_pos` *(number)*
+- `q_vel` *(number)*
+- `r_torque` *(number)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `reg_init` *(number)*
 
 ---
 
