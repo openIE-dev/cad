@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_51 tools registered._
+_52 tools registered._
 
 ---
 
@@ -584,6 +584,31 @@ Wave 76.C/D — solve iterative MPC for the kinematic bicycle \ with optional ci
 - `max_iter` *(integer)*
 - `tol` *(number)*
 - `obstacles` *(array)*
+
+---
+
+## `solve_bicycle_nmpc`
+
+Wave 77.B/C — bicycle Nonlinear MPC via OpEn's PANOC solver. \ Companion to solve_bicycle_mpc (which uses iterative LTV \ around a nominal via Clarabel QP). NMPC tackles the full \ nonconvex problem directly, with adjoint-method gradient \ backpropagated through the bicycle dynamics. Use this variant \ when: cost is non-quadratic, control set isn't a box (try \ `bound_kind="ball"` for a Euclidean-ball constraint), or \ dynamics are non-smooth (replace bicycle with another \ NonlinearPlant in future waves). \ Args: same as solve_bicycle_mpc, plus `bound_kind` \ ("rectangle"|"ball"|"inf_ball"|"none", default \ "rectangle"), `bound_radius` (number, used when bound_kind \ is ball/inf_ball, default 10.0 / 2.0), `max_iter` (int, \ default 300), `tol` (number, default 1e-5), `lbfgs_memory` \ (int, default 10). No obstacle field — Wave 77 NMPC \ doesn't include obstacle penalties (use solve_bicycle_mpc \ for obstacles).
+
+**Arguments**
+
+- `wheelbase` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `x0` *(array)*
+- `x_ref` *(array)*
+- `u_ref` *(array)*
+- `u_min` *(array)*
+- `u_max` *(array)*
+- `bound_kind` *(string)*
+- `bound_radius` *(number)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `lbfgs_memory` *(integer)*
 
 ---
 
