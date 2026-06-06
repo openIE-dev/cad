@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_54 tools registered._
+_55 tools registered._
 
 ---
 
@@ -474,6 +474,25 @@ Wave 68 — place a vendor-validated footprint into project.eda.pcb \ from a sta
 - `x_mm` *(number)*
 - `y_mm` *(number)*
 - `rotation_deg` *(number)*
+
+---
+
+## `plan_rrt_star`
+
+Wave 79.C — 2D RRT* (Karaman & Frazzoli 2011) for global \ path planning through circular obstacles. Pure Rust; pairs \ with the bicycle MPCs — feed the returned waypoints in as \ the reference trajectory (interpolated to 4-state \ (X, Y, ψ, v)) and have solve_bicycle_mpc / _ilqr / _mppi \ track it. Asymptotically optimal: more iterations → better \ path. Reuses the same Obstacle primitive as \ solve_bicycle_mpc, so plan + control share data. \ Args: `start` (length-2 vector, required), `goal` (length-2, \ required), `bounds` (length-4 vector [x_min, x_max, y_min, \ y_max], required), `obstacles` (array of {x, y, radius, \ safety_margin?, slack_penalty?}, optional), `step_size` \ (number, default 0.5), `goal_radius` (number, default 0.3), \ `rewire_radius` (number, default 1.0), `n_iterations` (int, \ default 2000), `goal_bias` (number 0..1, default 0.1), \ `seed` (int, optional). Returns the waypoint sequence or \ an error if no path was found in `n_iterations`.
+
+**Arguments**
+
+- `start` *(array)*
+- `goal` *(array)*
+- `bounds` *(array)*
+- `obstacles` *(array)*
+- `step_size` *(number)*
+- `goal_radius` *(number)*
+- `rewire_radius` *(number)*
+- `n_iterations` *(integer)*
+- `goal_bias` *(number)*
+- `seed` *(integer)*
 
 ---
 
