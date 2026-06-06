@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_61 tools registered._
+_62 tools registered._
 
 ---
 
@@ -614,6 +614,34 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `solve_acrobot_step`
+
+Wave 89.B — one iLQR call on the Acrobot, a 2-link arm \ with only the ELBOW joint actuated (shoulder is passive). \ The Spong-canonical underactuated benchmark — like \ cart-pole, only one control acts on 4 states, but the \ coupling is via Coriolis (not cart acceleration). True \ swing-up to upright is genuinely fragile for local \ methods, so this tool returns whatever the iLQR finds \ without claiming stabilisation — useful for trajectory \ exploration, energy-shaping bootstrap, or RL warm-starts. \ Args: arm physical params m1, m2, l1, l2, lc1, lc2, i1, \ i2, gravity (defaults to standard Spong-1995 acrobot). \ `dt` (default 0.02), `horizon` (int, default 25), `x0` \ (length-4: q1, q2, qd1, qd2; required), `x_target` \ (length-4; required). Optional cost: matrices q/r/qf. \ iLQR knobs max_iter/tol/reg_init. Returns elbow-torque \ sequence + predicted trajectory.
+
+**Arguments**
+
+- `m1` *(number)*
+- `m2` *(number)*
+- `l1` *(number)*
+- `l2` *(number)*
+- `lc1` *(number)*
+- `lc2` *(number)*
+- `i1` *(number)*
+- `i2` *(number)*
+- `gravity` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `x0` *(array)*
+- `x_target` *(array)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `max_iter` *(integer)*
+- `tol` *(number)*
+- `reg_init` *(number)*
 
 ---
 
