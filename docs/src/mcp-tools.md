@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_53 tools registered._
+_54 tools registered._
 
 ---
 
@@ -605,6 +605,31 @@ Wave 76.C/D — solve iterative MPC for the kinematic bicycle \ with optional ci
 - `max_iter` *(integer)*
 - `tol` *(number)*
 - `obstacles` *(array)*
+
+---
+
+## `solve_bicycle_mppi`
+
+Wave 79.A — bicycle Model Predictive Path Integral (MPPI) \ control. Sampling-based MPC: at each step, draws \ `n_samples` Gaussian noise sequences over the horizon, \ rolls each through the plant, and Boltzmann-averages by \ cost. No gradients required — works with any plant. CPU- \ parallel via rayon. Use when: plant is non-smooth or \ discrete; you want robustness to local minima; or you have \ spare CPU/GPU cores to throw at it. \ Args: same plant + cost as solve_bicycle_ilqr, plus \ `n_samples` (int, default 256), `n_iterations` (int, \ default 2), `sigma` (length-2 vector, default [0.5, 0.2] \ — accel/steer noise stdev), `lambda` (number, default 1.0 \ — Boltzmann temperature: smaller = greedier), `u_min`/\ `u_max` (length-2 vectors, optional — sampled controls \ are clamped), `seed` (int, optional — pass for reproducibility).
+
+**Arguments**
+
+- `wheelbase` *(number)*
+- `dt` *(number)*
+- `horizon` *(integer)*
+- `q` *(array)*
+- `r` *(array)*
+- `qf` *(array)*
+- `x0` *(array)*
+- `x_ref` *(array)*
+- `u_ref` *(array)*
+- `n_samples` *(integer)*
+- `n_iterations` *(integer)*
+- `sigma` *(array)*
+- `lambda` *(number)*
+- `u_min` *(array)*
+- `u_max` *(array)*
+- `seed` *(integer)*
 
 ---
 
