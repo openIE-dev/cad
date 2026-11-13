@@ -1,7 +1,7 @@
 # MCP Tool Reference
 
-Every tool the openie-cad MCP server at `https://cad.openie.dev/mcp` exposes.
-Auto-generated from the substrate source on each release.
+Every tool in the cad-agent registry (the kernel-side tool set) served at `https://cad.openie.dev/mcp`.
+Auto-generated from the substrate source on each release. For the full served surface, including planner-server tools, see https://cad.openie.dev/reference/mcp-tools/.
 
 Call any tool by sending an MCP `tools/call` request with the tool's `name`
 and the documented arguments. The session ID returned from the first call
@@ -10,31 +10,33 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_62 tools registered._
+_80 tools registered._
 
 ---
 
 ## `add_track`
 
-Add a copper track between points
+Add copper track segments between consecutive points on the \ project's PCB. Args: `net` (default "VCC"), `width` (mm, \ default 0.25), `layer` (e.g. "F.Cu", default "F.Cu"), \ `points` (REQUIRED array of [x, y] in mm, at least 2 points). \ If the project has no PCB yet, a default 100x80 mm 4-layer \ board is created first. Returns the segment count, layer, net, \ and width. Errors: missing/fewer than 2 points, malformed \ [x, y] pairs, or an unknown layer name.
 
 **Arguments**
 
 - `net` *(string)*
 - `width` *(number)*
 - `layer` *(string)*
+- `points` *(array)*
 
 ---
 
 ## `add_via`
 
-Add a via at a position
+Add a through-hole via (F.Cu to B.Cu) on the project's PCB. \ Args: `x`, `y` (mm, default 0), `drill` (mm, default 0.3, must \ be positive), `pad` (mm, default drill + 0.5), `net` (default \ "GND"). If the project has no PCB yet, a default 100x80 mm \ 4-layer board is created first. Returns position, drill, pad, \ and net. Errors when `drill` is not positive.
 
 **Arguments**
 
 - `x` *(number)*
 - `y` *(number)*
 - `drill` *(number)*
+- `pad` *(number)*
 - `net` *(string)*
 
 ---
@@ -56,7 +58,7 @@ Wave 63.A — answer the 'can this BGA escape at all on this fab tier?' \ questi
 
 ## `check_diff_pair`
 
-Calculate differential pair impedance
+Calculate differential-pair impedance (edge-coupled, 1 oz \ copper, 0.035 mm thickness, FR-4 er=4.3 fixed). Args: \ `trace_width` (mm, default 0.127), `gap` (mm, default 0.127), \ `dielectric_height` (mm, default 0.2). Returns \ `Diff pair Z_diff=<n>Ω, Z_common=<n>Ω, coupling=<n>`. Pure \ calculation — no project state is read or written.
 
 **Arguments**
 
@@ -68,7 +70,7 @@ Calculate differential pair impedance
 
 ## `check_impedance`
 
-Calculate microstrip trace impedance
+Calculate microstrip trace impedance for a surface trace \ (1 oz copper, 0.035 mm thickness, is fixed). Args: \ `trace_width` (mm, default 0.254), `dielectric_height` (mm, \ default 0.2), `er` (dielectric constant, default 4.3). Returns \ `Microstrip Z0=<n>Ω, delay=<n>ps/mm, Eff.Er=<n>`. Pure \ calculation — no project state is read or written.
 
 **Arguments**
 
@@ -93,9 +95,26 @@ Wave 65 — microstrip impedance + loss at mmWave (>10 GHz) with \ Djordjevic-Sa
 
 ---
 
+## `control_plant`
+
+Stabilize ANY controllable plant in the registry by name using \ iLQR — compute a control sequence that drives the state from `x0` \ toward a `target` under quadratic state/control/terminal costs. \ Works generically across the 350+ plants (no per-plant solver \ wiring); autonomous plants with no inputs are rejected (use \ simulate_plant instead). Args: `name` (string, required), `x0` \ (array, required — initial state), `target` (array, optional — \ goal state, default origin), `horizon` (integer, default 30), `q` \ (number — state-error weight, default 1.0), `r` (number — control \ weight, default 0.01), `qf` (number — terminal weight, default \ 10.0), `max_iter` (integer, default 50). Returns convergence, cost, \ the immediate control u0, the full control sequence, and the final \ state.
+
+**Arguments**
+
+- `name` *(string)*
+- `x0` *(array)*
+- `target` *(array)*
+- `horizon` *(integer)*
+- `q` *(number)*
+- `r` *(number)*
+- `qf` *(number)*
+- `max_iter` *(integer)*
+
+---
+
 ## `create_board`
 
-Create a PCB board with dimensions
+Create a rectangular PCB and install it as the project's PCB \ (replaces any existing project PCB). Args: `name` (default \ "board"), `width` (mm, default 35), `height` (mm, default 25), \ `layers` (copper count, default 2). Returns the board dimensions \ and area, e.g. `Created 35x25mm 2-layer board (875mm²) and set \ it as the project's PCB`. Errors when width, height, or layers \ are not positive.
 
 **Arguments**
 
@@ -108,7 +127,7 @@ Create a PCB board with dimensions
 
 ## `create_box`
 
-Create a box with width, height, depth in mm
+Create an axis-aligned box solid in the kernel, centered at the \ origin. Args: `width`, `height`, `depth` (numbers, mm; each \ defaults to 10). Returns the new body's UUID and its dimensions, \ e.g. `Created box <uuid> (10x10x10mm)`. Fails with the kernel's \ error if the primitive is rejected.
 
 **Arguments**
 
@@ -120,7 +139,7 @@ Create a box with width, height, depth in mm
 
 ## `create_cylinder`
 
-Create a cylinder with radius and height in mm
+Create a solid cylinder in the kernel along the Y axis, centered \ at the origin. Args: `radius` (mm, default 5), `height` (mm, \ default 10). Returns the new body's UUID. Fails with the \ kernel's error if the primitive is rejected.
 
 **Arguments**
 
@@ -144,7 +163,7 @@ Wave 74.B — pure-Rust forward pass through the DeepCAD command-\ sequence deco
 
 ## `delete_body`
 
-Delete a body by its UUID
+Delete a kernel body by UUID. Arg: `body_id` (string, required) \ — a body UUID from create_box / eval_ocl / list_bodies. Returns \ `Deleted body <id>`. Errors: `Invalid body ID '<id>': ...` when \ the string is not a valid entity id; `Failed to delete body: ...` \ when no such body exists.
 
 **Arguments**
 
@@ -169,7 +188,7 @@ Wave 75.C — design a discrete-time infinite-horizon Linear-\ Quadratic Regulat
 
 ## `estimate_cost`
 
-Estimate manufacturing cost
+Estimate manufacturing cost for the project's PCB + BOM. Args: \ `quantity` (number, default 5), `fab` (string, default \ "JLCPCB"; also "PCBWay", "OSHPark"). Returns the \ estimated cost for the requested quantity at that fab's \ pricing. Unknown fabs fall back to a generic per-board rate.
 
 **Arguments**
 
@@ -198,7 +217,7 @@ Wave 81.A — Moving Horizon Estimation, the dual of MPC. \ Given a window of pa
 
 ## `eval_ocl`
 
-Parse and evaluate OCL, producing geometry
+Parse and evaluate an OCL document against the engine. Arg: \ `source` (string, required). Produces kernel geometry plus \ ECAD netlist/PCB, schematic, sim, and firmware records. Parse \ errors fail fast (`OCL evaluation error: ...`); errors inside \ domain blocks are non-fatal by design but reported alongside \ the result (`... errors inside domain blocks: ...`) so they \ are never silent.
 
 **Arguments**
 
@@ -216,7 +235,7 @@ Export bodies as OpenCascade BREP (polyhedral subset — \ each triangle becomes
 
 ## `export_gerber`
 
-Export Gerber fabrication files
+Report the Gerber layer set for the project's PCB (F.Cu, B.Cu, \ F.Mask, B.Mask, F.SilkS, Edge.Cuts, drill). No inputs. \ Currently returns the layer list only — no files are written \ yet (roadmap); the full Gerber writer belongs to the \ format/mfg surface.
 
 **No arguments.**
 
@@ -224,7 +243,7 @@ Export Gerber fabrication files
 
 ## `export_gltf`
 
-Export bodies as glTF 2.0
+Encode the FIRST kernel body as glTF 2.0 in memory and report \ its size. No inputs. Returns `glTF exported: <N> bytes`. \ Errors: `No bodies` when the project has no geometry. Note: the \ payload is not written to disk or returned — this validates the \ export path only.
 
 **No arguments.**
 
@@ -232,7 +251,7 @@ Export bodies as glTF 2.0
 
 ## `export_obj`
 
-Export bodies as OBJ
+Encode the FIRST kernel body as Wavefront OBJ text in memory \ and report its size. No inputs. Returns `OBJ exported: <N> \ bytes`. Errors: `No bodies` when the project has no geometry. \ Note: the text is not written to disk or returned — this \ validates the export path only.
 
 **No arguments.**
 
@@ -240,7 +259,7 @@ Export bodies as OBJ
 
 ## `export_ply`
 
-Export bodies as Stanford PLY (ASCII)
+Encode the FIRST kernel body as Stanford PLY (ASCII) in memory \ and report its size. No inputs. Returns `PLY exported: <N> \ bytes, <M> triangles`. Errors: `No bodies` when the project has \ no geometry. Note: the text is not written to disk or returned \ — this validates the export path only.
 
 **No arguments.**
 
@@ -248,7 +267,7 @@ Export bodies as Stanford PLY (ASCII)
 
 ## `export_stl`
 
-Export bodies as STL binary
+Encode the FIRST kernel body as binary STL in memory and \ report its size. No inputs. Returns `STL exported: <N> bytes, \ <M> triangles`. Errors: `No bodies` when the project has no \ geometry. Note: the bytes are not written to disk or returned \ — this validates the export path only.
 
 **No arguments.**
 
@@ -266,7 +285,7 @@ Export bodies as Salome XAO (BREP payload + topology + groups). \ Argument `name
 
 ## `generate_bom`
 
-Generate Bill of Materials
+Count the project's BOM lines from PCB footprints and schematic \ symbols. No inputs. Returns `<N> entries (<F> footprints, <S> \ schematic symbols)`. Note: this reports the count only — it \ does not emit a BOM file; use generate_jlcpcb_bom for a JLCPCB \ CSV.
 
 **No arguments.**
 
@@ -289,6 +308,20 @@ Wave 70.B — follow an arbitrary 2D path at successive Z depths. \ Caller suppl
 
 ---
 
+## `generate_drawing`
+
+Wave 81 — 2D engineering drawing of a kernel body with hidden-line \ removal. Tessellates the body and renders a 2×2 multi-view SVG \ (front / top / right / iso) where edges occluded by the part's own \ surface are drawn dashed and visible edges solid — the standard \ drafting convention. Returns the full SVG inline plus a length and \ snippet. Args: `body` (index into the project's bodies, default 0), \ `part_name` (title block, default 'part'), `tolerance` (tessellation \ chord error mm, default 0.1, clamped 0.01–1.0), `feature_angle_deg` \ (crease angle for edge extraction, default 30, clamped 1–89), \ `samples` (per-edge occlusion sampling, default 24, clamped 2–64). \ Requires at least one body in the project.
+
+**Arguments**
+
+- `body` *(integer)*
+- `part_name` *(string)*
+- `tolerance` *(number)*
+- `feature_angle_deg` *(number)*
+- `samples` *(integer)*
+
+---
+
 ## `generate_drill_gcode`
 
 Wave 70.B — drill a list of holes. Args: `positions_mm` (required, \ array of [x,y]), `depth_mm` (default 5), `peck_increment_mm` \ (optional; when set, enables G83-style peck drilling with full \ retract between pecks), `plunge_rate_mm_min` (default 200), \ `spindle_rpm` (default 10000), `safe_z_mm` (default 5).
@@ -306,7 +339,7 @@ Wave 70.B — drill a list of holes. Args: `positions_mm` (required, \ array of 
 
 ## `generate_firmware`
 
-Generate firmware skeleton code
+Generate firmware skeleton code for a target MCU family. Arg: \ `target` (string, default "Esp32S3"; e.g. stm32f4, stm32h7, \ nrf52840, esp32, esp32c3, rp2040, rp2350 — case-insensitive). \ Returns the generated skeleton source. The output is a marked \ skeleton (peripheral drivers not yet generated) — see the \ cad-firmware scope; unknown targets are an error naming the \ supported families.
 
 **Arguments**
 
@@ -386,7 +419,7 @@ Wave 72 — ingest a DeepCAD command-sequence JSON (Wu et al. ICCV \ 2021; outpu
 
 ## `import_kcl`
 
-Import a KCL (Zoo.dev) source file
+Parse a KCL (Zoo.dev) source string and report the statement \ count. Arg: `source` (string, required) — the KCL text. Returns \ `Imported KCL: <N> statements` or `KCL error: ...` with the \ parse failure. Note: currently validates/parses only — the \ parsed program is not yet converted into kernel geometry \ (roadmap).
 
 **Arguments**
 
@@ -457,9 +490,34 @@ Wave 75.B — single predict+update step of a linear Kalman filter \ for x_{k+1}
 
 ---
 
+## `list_control_plants`
+
+Browse the cad-control dynamics-plant registry — 350+ canonical \ control/dynamical-systems plants (chaos, robotics, power, process, \ aerospace, biology, economics, …), each callable by name. Lists \ plants as `Name [state×control] — summary`. Args: `filter` (string, \ optional — case-insensitive substring matched against the name and \ summary, e.g. "motor", "chaos", "pendulum"), `limit` (integer, \ optional, default 40). Pair with `plant_info` and `simulate_plant`.
+
+**Arguments**
+
+- `filter` *(string)*
+- `limit` *(integer)*
+
+---
+
+## `optimize_placement`
+
+Wave 81 — simulated-annealing GLOBAL component placement on \ project.eda.pcb. Unlike run_placement (a local force-directed \ relaxation), this minimizes total half-perimeter wirelength (HPWL) \ plus an overlap/out-of-bounds penalty over a geometric cooling \ schedule, so it escapes the local minima that trap the FR solver. \ Reports HPWL and overlap before/after. Args: `iterations` (move \ budget, default 8000, clamped 100–50000), `seed` (PRNG seed for \ reproducibility), `overlap_weight` (penalty on overlap area mm², \ default 50), `allow_rotation` (90° transposes, default true), \ `locked` (array of refs to pin). Requires a PCB with ≥2 footprints.
+
+**Arguments**
+
+- `iterations` *(integer)*
+- `seed` *(integer)*
+- `overlap_weight` *(number)*
+- `allow_rotation` *(boolean)*
+- `locked` *(array)*
+
+---
+
 ## `parse_ocl`
 
-Parse an OCL source string
+Parse an OCL source string into an AST without evaluating it. \ Arg: `source` (string, required) — the OCL document text. \ Returns `Parsed OCL: <N> items` or the first parse error with \ its source span (`OCL parse error: ...`). Use eval_ocl to \ actually execute the document.
 
 **Arguments**
 
@@ -469,7 +527,7 @@ Parse an OCL source string
 
 ## `place_footprint`
 
-Place a component footprint on the PCB
+Place a component footprint instance on the project's PCB at \ (x, y) mm. Args: `reference` (e.g. "U1", default "U1"), \ `lib_id` (footprint library id, e.g. "Package:QFP", default \ "Package:QFP"), `x`, `y` (mm, default 0). If the project has \ no PCB yet, a default 100x80 mm 4-layer board is created first. \ Returns the reference, position, and footprint UUID. The \ footprint carries no pads — use place_vendor_footprint for a \ fully-detailed vendor footprint from a .kicad_mod file.
 
 **Arguments**
 
@@ -514,6 +572,26 @@ Wave 79.C — 2D RRT* (Karaman & Frazzoli 2011) for global \ path planning throu
 
 ---
 
+## `plant_info`
+
+Report the state dimension, control (input) dimension, and one-line \ summary of a single registered dynamics plant. Args: `name` (string, \ required — the plant's registry name, e.g. "Lorenz", "CartPole", \ "DynamicBicycle"; browse with list_control_plants).
+
+**Arguments**
+
+- `name` *(string)*
+
+---
+
+## `recognise_features`
+
+Recognise manufacturing features in a STEP B-rep solid by calling the quiddity CLI (0.4.9) as a process and parsing its JSON recognition document. Arg: `step` (string, required) — STEP file content. Returns the recognition receipt as JSON: verdict Recognised/Refused, records with parameters and evidence_status, face accounting, source_sha256, and the measured-joule fields under boundary (b). Refuses (never crashes) when the CLI is absent, the input is not a B-rep solid/shell with faces, or the document fails validation — the refusal receipt names the precondition. Requires the quiddity CLI installed (`pip install quiddity==0.4.9`). No project state is read or written.
+
+**Arguments**
+
+- `step` *(string)*
+
+---
+
 ## `render_pcb_svg`
 
 Render project.eda.pcb as an SVG board preview — outline, copper \ tracks per layer, vias, placed footprints with reference designators. \ Returns the SVG inline so agents/users can see what was imported. \ Optional args: `scale` (px/mm, default 10), `margin_mm` (default 5), \ `show_references` (default true). Requires a PCB.
@@ -542,6 +620,32 @@ Wave 80.D — query a Candle-trained Gaussian MLP policy \ (Wave 80.A's Gaussian
 
 ---
 
+## `route_dmf_droplets`
+
+Route a digital-microfluidics (EWOD) assay: move droplets across \ an electrode grid from start to target, collision-free, and \ return the activation schedule. Enforces the fluidic constraint \ that two droplets may never be on adjacent electrodes at once \ (they'd merge) via prioritised time-expanded A* with a one-cell \ exclusion halo. Args: `nx`,`ny` (electrode grid size, required), \ `droplets` (array; each {`id`?, `start`:[x,y], `target`:[x,y]}). \ Returns the timestep count and each droplet's routed endpoints; \ a verified ≥2-cell separation holds at every step. Set \ `optimal` true to route with Conflict-Based Search (minimum \ total travel) instead of the fast greedy planner.
+
+**Arguments**
+
+- `nx` *(integer)*
+- `ny` *(integer)*
+- `droplets` *(array)*
+- `optimal` *(boolean)*
+
+---
+
+## `route_microfluidic_design`
+
+Synthesise a microfluidic layout from a MINT-subset netlist — \ the fluidic analogue of PCB place-and-route. Parses components \ and the channels between their ports, places the components \ without overlap, and routes each channel as a Manhattan path \ (grid A*) around every footprint. MINT grammar (one per line): \ `component <id> <kind> <width_um> <height_um>` and \ `channel <id>.<port> <id>.<port>`, where ports are the \ auto-generated edge midpoints W/E/N/S. Args: `mint` (netlist \ text, required), `gap_um` (placement gap, default 400), \ `row_width_um` (shelf wrap width, default 8000), `pitch_um` \ (routing grid, default 100). Returns component placements, \ channel count, and total channel length.
+
+**Arguments**
+
+- `mint` *(string)*
+- `gap_um` *(number)*
+- `row_width_um` *(number)*
+- `pitch_um` *(number)*
+
+---
+
 ## `run_autorouter`
 
 Route all unconnected nets on project.eda.pcb. Groups footprint \ pads by net name, decomposes each multi-pin net via SALT \ (Wave 58 shallow-light tree), and routes each tree edge with the \ cad-router A* engine — optionally using PathFinder negotiation \ (Wave 55) when `negotiation = true`. Resulting paths get lifted \ back into project.eda.pcb.tracks. Args: `epsilon` (number, SALT \ radius/wirelength knob, default 1.0); `negotiation` (boolean, \ default false); `length_targets` (Wave 62: optional array of \ `{net: string, target_mm: number, tolerance_mm: number, \ amplitude_mm?: number, spacing_mm?: number}` — each named net \ gets a serpentine meander inserted to match the target length, \ useful for DDR group-skew and PCIe diff-pair matching); \ `length_match_groups` (Wave 64.A: optional array of \ `{name: string, nets: [string, ...], tolerance_mm: number, \ target_mm?: number, amplitude_mm?: number, spacing_mm?: number}` \ — names a group of nets to be length-matched. When \ target_mm is omitted the substrate picks the longest \ routed length as the consensus target, so every \ undersize net meanders up to match. Replaces \ length_targets when the caller wants substrate- \ computed targets); \ `bgas` (Wave 63.F: optional array of \ `{footprint_ref: string, pitch_mm: number, \ pad_diameter_mm: number, fab_tier: "standard"|"hdi", \ inner_layers: ["In1Cu", ...], buses: {bus_name: [net_name, ...]}, \ strategy?: "offset"|"via_in_pad"}` — each entry \ names a BGA in the PCB by footprint reference; the \ substrate runs the Wave 63 LCIS escape stack and \ splices the resulting tracks + vias before routing \ the general fabric). Requires a PCB.
@@ -558,7 +662,7 @@ Route all unconnected nets on project.eda.pcb. Groups footprint \ pads by net na
 
 ## `run_dfm`
 
-Run Design for Manufacturability check
+Run the Design-for-Manufacturability check against the \ project's PCB for a target fab. Arg: `fab` (string, default \ "JLCPCB"; also "PCBWay", "OSHPark"). Returns \ manufacturable yes/NO, error/warning counts, the first 10 \ violations, and the estimated cost per board. Errors: unknown \ fab name (`Unknown fab ... — supported: JLCPCB | PCBWay | \ OSHPark`), or no PCB in the project — create one with \ create_board or import_kicad first.
 
 **Arguments**
 
@@ -568,7 +672,7 @@ Run Design for Manufacturability check
 
 ## `run_drc`
 
-Run Design Rule Check on the PCB
+Run the Design Rule Check (cad-eda DRC engine) against the \ project's PCB using the project's DRC rules, augmented with \ per-fab energy/CO2 estimates. No inputs. Returns PASSED/FAILED \ plus the violation list. Errors when the project has no PCB \ yet — create one with create_board or import_kicad first. (A \ project with no layout is an error, not a pass.)
 
 **No arguments.**
 
@@ -590,11 +694,29 @@ Wave 66 — force-directed component placement on project.eda.pcb. \ Models each
 
 ## `run_thermal`
 
-Run thermal simulation
+Report the thermal-simulation entry point for the project. \ Arg: `ambient_c` (number, °C, default 25). Currently returns \ the requested ambient temperature and notes the solver needs a \ mesh — a full thermal solve is NOT wired yet (roadmap). Do not \ treat the result as a simulation outcome.
 
 **Arguments**
 
 - `ambient_c` *(number)*
+
+---
+
+## `simulate_conjugate_heat`
+
+Solve conjugate heat transfer across a two-material (e.g. \ solid/fluid) composite wall: a single temperature field with \ per-cell conductivity, harmonic-mean face coupling (which makes \ temperature AND heat flux continuous across the interface \ automatically), and optional flow that advects heat. Reports the \ steady interface temperature vs the analytic series-resistance \ value and how continuous the flux is across the conductivity jump. \ Args: `nx`,`ny` (grid, default 60×6), `dx` (m, default 1e-4), \ `k1`,`k2` (W/m·K, left/right halves, default 1/3), `rho_cp` \ (J/m³·K, default 1e6), `t_left`,`t_right` (default 1/0), `flow` \ (m/s, default 0).
+
+**Arguments**
+
+- `nx` *(integer)*
+- `ny` *(integer)*
+- `dx` *(number)*
+- `k1` *(number)*
+- `k2` *(number)*
+- `rho_cp` *(number)*
+- `t_left` *(number)*
+- `t_right` *(number)*
+- `flow` *(number)*
 
 ---
 
@@ -614,6 +736,88 @@ Wave 67 — partitioned multi-physics coupling primitive. Runs a \ linear coupli
 - `iqn_history_max` *(integer)*
 - `max_iterations` *(integer)*
 - `tolerance` *(number)*
+
+---
+
+## `simulate_microfluidic_network`
+
+Solve a microfluidic channel network by nodal analysis — the \ hydraulic analogue of circuit MNA (pressure↔voltage, flow↔current, \ Hagen-Poiseuille resistance↔resistance, reservoir↔voltage source, \ flow source↔current source). This is MMFT-1D-class 1D network \ simulation: give it the channel graph + boundary conditions and it \ returns every nodal pressure and channel flow rate. Args: `n_nodes` \ (int, required), `viscosity` (Pa·s, default 1e-3 = water), `channels` \ (array; each {`from`,`to`} plus either `resistance` (Pa·s/m³), or \ `radius`+`length` (circular), or `width`+`height`+`length` \ (rectangular) — all SI metres), `boundaries` (array; each {`node`} \ plus either `pressure` (Pa) or `flow` (m³/s); at least one pressure \ BC required to anchor the network). Series/parallel channels \ reproduce the textbook R_eq; a single channel reproduces \ Hagen-Poiseuille exactly.
+
+**Arguments**
+
+- `n_nodes` *(integer)*
+- `viscosity` *(number)*
+- `channels` *(array)*
+- `boundaries` *(array)*
+
+---
+
+## `simulate_mixing_field`
+
+Simulate solute mixing in a channel as a 2D advection-diffusion \ field — the grid solver behind the analytical Péclet/mixing-length \ estimates. Seeds a left-half slug (sharp interface) and advances it; \ reports how much the interface homogenises (variance drop = % mixed). \ Runs on the GPU compute kernel when the server is built with the \ `gpu` feature and an adapter is present, else on the identical CPU \ stencil (they agree to f32 precision). Args: `nx`,`ny` (grid, default \ 48), `dx` (m, default 1e-5), `diffusivity` (m²/s, default 1e-9), \ `ux`,`uy` (m/s, default 0), `steps` (default 200).
+
+**Arguments**
+
+- `nx` *(integer)*
+- `ny` *(integer)*
+- `dx` *(number)*
+- `diffusivity` *(number)*
+- `ux` *(number)*
+- `uy` *(number)*
+- `steps` *(integer)*
+
+---
+
+## `simulate_natural_convection`
+
+Solve buoyancy-driven natural convection in a differentially-heated \ square cavity (Boussinesq, vorticity-streamfunction) — the velocity \ is generated by the temperature field, not prescribed. Reports the \ hot-wall Nusselt number (Nu=1 ⇒ pure conduction; de Vahl Davis \ benchmark Nu≈1.118 at Ra=10³) and the peak flow speed. Set \ `smagorinsky` > 0 to enable the algebraic eddy-viscosity turbulence \ closure. NOTE: this runs a steady-state CFD solve synchronously and \ is bounded (grid ≤51, capped iterations) — higher Ra takes longer. \ Args: `n` (grid, default 31, clamped 11–51), `ra` (Rayleigh, default \ 1e3), `pr` (Prandtl, default 0.71), `smagorinsky` (Cs, default 0), \ `max_steps` (default 40000, capped 60000).
+
+**Arguments**
+
+- `n` *(integer)*
+- `ra` *(number)*
+- `pr` *(number)*
+- `smagorinsky` *(number)*
+- `max_steps` *(integer)*
+
+---
+
+## `simulate_plant`
+
+Roll a registered dynamics plant forward in time from an initial \ state under a constant control input, returning the (down-sampled) \ state trajectory and final state. Works for any of the 350+ plants in \ the registry — no per-plant wiring. Args: `name` (string, required), \ `x0` (array, required — initial state, must match the plant's state \ dimension; see plant_info), `control` (array, optional — constant \ input, defaults to zeros of the plant's control width), `steps` \ (integer, optional, default 100). Returns final_state + a sampled \ trajectory + a finiteness flag.
+
+**Arguments**
+
+- `name` *(string)*
+- `x0` *(array)*
+- `control` *(array)*
+- `steps` *(integer)*
+
+---
+
+## `simulate_rans_channel`
+
+Wave 81 — RANS turbulent channel flow via the Spalart-Allmaras \ one-equation model. Solves the fully-developed half-channel velocity \ profile in wall units (ν=1, u_τ=1) and reports the log-law slope \ (1/κ ≈ 2.44 when the model is correct; κ≈0.41), the centreline u⁺, \ and a few profile points (y⁺, u⁺, ν_t⁺) across the wall / buffer / \ log layers. NOTE: a synchronous solve, bounded (grid ≤256, sweeps \ ≤2000). Args: `re_tau` (friction Reynolds number, default 395, \ clamped 50–5000), `n` (grid points across half-channel, default 96, \ clamped 16–256), `outer_iters` (Picard sweeps, default 300, clamped \ 20–2000).
+
+**Arguments**
+
+- `re_tau` *(number)*
+- `n` *(integer)*
+- `outer_iters` *(integer)*
+
+---
+
+## `simulate_rayleigh_benard_3d`
+
+Solve 3D Rayleigh-Bénard convection — a fluid layer heated from \ below — with a full 3D incompressible Navier-Stokes projection \ solver (Boussinesq buoyancy). Reports the Nusselt number and peak \ speed, and whether the layer has crossed the convective instability \ (Nu>1) or stays conductive (Nu=1). Above the critical Rayleigh \ number (Ra_c≈1708) a small perturbation grows into convection \ cells. NOTE: a synchronous 3D CFD solve, bounded (grid ≤16³, steps \ ≤2500) — higher Ra/steps cost more. Args: `n` (horizontal grid, \ default 12, 6–16), `nz` (vertical, default n), `ra` (Rayleigh, \ default 5e4), `pr` (Prandtl, default 1), `steps` (default 1200).
+
+**Arguments**
+
+- `n` *(integer)*
+- `nz` *(integer)*
+- `ra` *(number)*
+- `pr` *(number)*
+- `steps` *(integer)*
 
 ---
 
@@ -796,6 +1000,23 @@ Wave 86.B — solve one step of receding-horizon iLQR to \ stabilize a cart-pole
 
 ---
 
+## `solve_impedance_field`
+
+Wave 81 — field-solver transmission-line impedance. Runs a 2D \ finite-difference Laplace solve over the conductor/dielectric \ cross-section to extract the TRUE Z0, effective εr, C, L and phase \ velocity, whereas check_impedance uses the analytic microstrip \ closed form. Default geometry is a microstrip: a signal trace on a \ layered substrate over a ground plane. NOTE: a synchronous PDE solve, \ bounded (grid ≤200×200). Args: `nx`,`ny` (grid, default 120×80, \ clamped 20–200), `dx`,`dy` (cell pitch m, default 5e-5), \ `trace_width` (m, default 0.254e-3), `dielectric_height` (m, default \ 0.2e-3), `trace_thickness` (m, default 0.035e-3), `er` (default 4.3).
+
+**Arguments**
+
+- `nx` *(integer)*
+- `ny` *(integer)*
+- `dx` *(number)*
+- `dy` *(number)*
+- `trace_width` *(number)*
+- `dielectric_height` *(number)*
+- `trace_thickness` *(number)*
+- `er` *(number)*
+
+---
+
 ## `solve_lti_mpc`
 
 Wave 76.A — solve one step of a linear time-invariant MPC \ via condensed-form QP. Problem: minimize Σ (x^T Q x + u^T R u) \ + x_N^T Qf x_N s.t. x_{k+1} = A x + B u, x_0 = given, optional \ box constraints on u and x. The decision variables are the \ control sequence u_0..u_{N-1}; the predicted state trajectory \ is reconstructed. Returns the full sequence + cost + status. \ For receding-horizon use, call repeatedly with the updated x0. \ If `qf` is omitted, the infinite-horizon LQR cost-to-go P∞ for \ (A, B, Q, R) is auto-synthesized as terminal cost, so even \ short horizons inherit LQR-grade stabilising behaviour. \ Args: `a`, `b`, `q`, `r` (matrices, required), `qf` (matrix, \ optional), `horizon` (int, default 10), `x0` (vector, required), \ `u_min`/`u_max`/`x_min`/`x_max` (vectors, optional).
@@ -881,9 +1102,55 @@ Wave 88.B — drive a planar VTOL quadrotor (PVTOL) to a \ hover setpoint via th
 
 ---
 
+## `solve_vlm`
+
+C3-1 — vortex-lattice solve of a wing planform via the \ clean-room VLM, routed through the V1 input validator \ (`validate_builder_job` → `ValidatedVlmJob::solve_metered`). \ Args: `planform` (string: rectangular | tapered | elliptic, \ default rectangular), `span` (default 10), `chord` (default \ 1; root chord for tapered/elliptic), `tip_chord` (default = \ chord; tapered only), `sweep_deg` / `dihedral_deg` / \ `twist_deg` (default 0), `nx` / `ny` (panel counts, defaults \ 4 / 20), `alpha_deg` (default 5), `v_inf` (default 50), \ `rho` (default 1.225). Returns result + both receipts \ (validation + solve) as separate JSON records, never summed. \ A refused job returns its refusal receipt as a normal \ result. Low-speed attached-flow theory only.
+
+**Arguments**
+
+- `planform` *(string)*
+- `span` *(number)*
+- `chord` *(number)*
+- `tip_chord` *(number)*
+- `sweep_deg` *(number)*
+- `dihedral_deg` *(number)*
+- `twist_deg` *(number)*
+- `nx` *(integer)*
+- `ny` *(integer)*
+- `alpha_deg` *(number)*
+- `v_inf` *(number)*
+- `rho` *(number)*
+
+---
+
+## `solve_vspaero`
+
+C3-1 — VSPAERO vortex-lattice / panel solve via the vendored \ solver subprocess, metered. Same planform inputs as the VLM \ path: `planform` (rectangular/tapered/elliptic, default \ rectangular), `span` (default 10), `chord` (default 1), \ `tip_chord` (default = chord), `sweep_deg`/`dihedral_deg`/ \ `twist_deg` (default 0), `nx`/`ny` (defaults 4/20, clamped \ 0–4096 each; the validator's 2,000-panel cap is the binding \ bound, and 0 is a named refusal). Flow: `mach` (default 0.05), `alpha_deg` (default 5), \ `beta_deg` (default 0), `v_inf` (default 50), `rho` (default \ 1.225), `re_cref` (default 1e7), `wake_iters` (default 3, \ clamped 0–10; 0 is a frozen wake upstream). The mesh is \ validated by the V1 validator before the case is built; a \ refusal returns its receipt as a normal result. A solve \ returns JSON with the polar (cl, cdi, cd0, cm) plus the \ validation receipt and the solve receipt as separate \ records, never summed. Joule fields are measured or \ absent, never estimated. No project state is read or written.
+
+**Arguments**
+
+- `planform` *(string)*
+- `span` *(number)*
+- `chord` *(number)*
+- `tip_chord` *(number)*
+- `sweep_deg` *(number)*
+- `dihedral_deg` *(number)*
+- `twist_deg` *(number)*
+- `nx` *(integer)*
+- `ny` *(integer)*
+- `mach` *(number)*
+- `alpha_deg` *(number)*
+- `beta_deg` *(number)*
+- `v_inf` *(number)*
+- `rho` *(number)*
+- `re_cref` *(number)*
+- `wake_iters` *(integer)*
+
+---
+
 ## `tessellate`
 
-Convert body to triangle mesh
+Tessellate the FIRST body in the kernel into a triangle mesh. \ Arg: `tolerance` (number, mm, default 0.1) — smaller is finer. \ Returns `<N> vertices, <M> triangles`. Errors: `No bodies to \ tessellate` when the project has no geometry — create some with \ create_box or eval_ocl first. Note: only the first body is \ meshed; there is no body selector yet.
 
 **Arguments**
 
