@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_80 tools registered._
+_81 tools registered._
 
 ---
 
@@ -38,6 +38,14 @@ Add a through-hole via (F.Cu to B.Cu) on the project's PCB. \ Args: `x`, `y` (mm
 - `drill` *(number)*
 - `pad` *(number)*
 - `net` *(string)*
+
+---
+
+## `certify_drc`
+
+Certify the project's PCB against the DRC engine and return \ a certification receipt (CERTIFIED or REFUSED) bound by \ SHA-256 to the exact board certified. Runs the five DRC \ checks — track widths, via sizes, clearance, hole spacing, \ copper edge — covering six violation types (TrackWidth, \ ViaDrill, ViaAnnularRing, Clearance, HoleSpacing, \ CopperEdge). Silkscreen, Courtyard, Connectivity, and \ Unconnected have no check function, are NOT run, and are \ named on the receipt. CERTIFIED iff the DRC report passed; \ warnings are listed and never fail. Re-running verification \ against a tampered board fails the hash check. No inputs. \ Errors when the project has no PCB yet — create one with \ create_board or import_kicad first.
+
+**No arguments.**
 
 ---
 
