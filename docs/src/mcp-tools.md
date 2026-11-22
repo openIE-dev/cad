@@ -10,7 +10,7 @@ keeps the project in memory for subsequent calls — see the
 
 ---
 
-_81 tools registered._
+_83 tools registered._
 
 ---
 
@@ -38,6 +38,28 @@ Add a through-hole via (F.Cu to B.Cu) on the project's PCB. \ Args: `x`, `y` (mm
 - `drill` *(number)*
 - `pad` *(number)*
 - `net` *(string)*
+
+---
+
+## `certify_devahl_davis`
+
+Certify the natural-convection solver against the de Vahl Davis (1983) \\
+ differentially-heated square-cavity benchmark (Ra=10³, Pr=0.71, laminar) \\
+ and return a certification receipt (CERTIFIED or REFUSED) bound by SHA-256 \\
+ to the exact run inputs. Runs the Boussinesq vorticity-streamfunction solve \\
+ and checks two things: the hot-wall Nusselt number is within 0.08 of the \\
+ benchmark 1.118, and the solve reached steady state (convergence tolerance \\
+ 1e-7) before the step cap. CERTIFIED iff both checks pass. The Smagorinsky \\
+ turbulence closure is NOT run; no other Rayleigh/Prandtl point has a \\
+ reference value and none is certified. Args: `n` (grid, default 51, 11–51), \\
+ `max_steps` (step budget, default 60000, 1–60000). Out-of-range inputs are \\
+ errors, never silently clamped; a REFUSED verdict is a normal result \\
+ carrying the receipt.
+
+**Arguments**
+
+- `n` *(integer)*
+- `max_steps` *(integer)*
 
 ---
 
@@ -233,6 +255,16 @@ Parse and evaluate an OCL document against the engine. Arg: \ `source` (string, 
 
 ---
 
+## `execute_kcl`
+
+Check and execute a KCL (Zoo.dev) source string against the \ kernel. Arg: `source` (string, required) — the KCL text. Runs \ a preflight check first (parse, lint detection, coverage, \ dry-run lowering on a scratch kernel); executes only if the \ preflight passes, otherwise nothing is created. Returns JSON: \ `preflight` (the check report), `executed`, `bodies_created`, \ `bindings`. Supported: pipeline sketch chains (startSketchOn, \ startProfileAt, line/xLine/yLine, close, extrude) on XY/XZ \ planes with positional arguments. Anything else refuses with \ a named reason; no geometry is invented.
+
+**Arguments**
+
+- `source` *(string)*
+
+---
+
 ## `export_brep`
 
 Export bodies as OpenCascade BREP (polyhedral subset — \ each triangle becomes a planar Face. Importable by FreeCAD / \ Salome / OCCT-CLI for viz or further Boolean ops; not a \ substitute for full surface BREP — for that use IGES / STEP).
@@ -243,9 +275,11 @@ Export bodies as OpenCascade BREP (polyhedral subset — \ each triangle becomes
 
 ## `export_gerber`
 
-Report the Gerber layer set for the project's PCB (F.Cu, B.Cu, \ F.Mask, B.Mask, F.SilkS, Edge.Cuts, drill). No inputs. \ Currently returns the layer list only — no files are written \ yet (roadmap); the full Gerber writer belongs to the \ format/mfg surface.
+Write Gerber RS-274X files for the project's PCB (one file \ per copper layer, plus Edge.Cuts and an Excellon drill file) \ and return the written paths. Arg: `output_dir` (string, \ required) — the directory the files are written to (created \ if missing); files are named `<layer>.gbr` (e.g. `F.Cu.gbr`), \ `Edge.Cuts.gbr`, `drill.drl`. Emits the spec-mandatory file \ attributes (.FileFunction, .FilePolarity, .SameCoordinates; \ Ucamco rev. 2026.05 §6.2). Emits copper + outline + drill \ only: no soldermask / silkscreen / paste files yet (footprint \ pads are not lifted to the export model). Boards that cannot \ be represented exactly (out-of-range coordinates, zero-size \ apertures, degenerate zones) are refused with an error naming \ the offending element — no files are written. Requires a PCB \ (import_zener_with_layout / import_kicad first).
 
-**No arguments.**
+**Arguments**
+
+- `output_dir` *(string)*
 
 ---
 
@@ -427,7 +461,7 @@ Wave 72 — ingest a DeepCAD command-sequence JSON (Wu et al. ICCV \ 2021; outpu
 
 ## `import_kcl`
 
-Parse a KCL (Zoo.dev) source string and report the statement \ count. Arg: `source` (string, required) — the KCL text. Returns \ `Imported KCL: <N> statements` or `KCL error: ...` with the \ parse failure. Note: currently validates/parses only — the \ parsed program is not yet converted into kernel geometry \ (roadmap).
+Parse a KCL (Zoo.dev) source string and report the statement \ count. Arg: `source` (string, required) — the KCL text. Returns \ `Imported KCL: <N> statements` or `KCL error: ...` with the \ parse failure. Note: validates/parses only — the parsed \ program is not converted into kernel geometry. For execution \ with a preflight check, use execute_kcl.
 
 **Arguments**
 
