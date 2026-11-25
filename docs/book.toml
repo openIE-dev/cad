@@ -3,7 +3,6 @@ title = "openie-cad"
 authors = ["openIE-dev"]
 description = "Rust-first, WASM-native CAD + ECAD + Multi-Physics simulation engine"
 language = "en"
-multilingual = false
 src = "src"
 
 [output.html]
