@@ -11,17 +11,26 @@ physics from the moment it's created. No export/import/mesh-setup loop. No
 
 You can use openie-cad in three ways:
 
-- **MCP (agent-callable)** at <https://cad.openie.dev/mcp> — 60+ tools that
+- **MCP (agent-callable)** at <https://cad.openie.dev/mcp> — tools that
   an AI agent (Claude, GPT, etc.) can call directly. The
-  [MCP tool reference](./mcp-tools.md) lists every tool with its arguments.
+  [MCP tool reference](./mcp-tools.md) lists every tool with its arguments;
+  it is generated from the registry, so it cannot go stale.
 - **REST API** at <https://cad.openie.dev/api> — see [REST API docs](./rest-api.md).
 - **Interactive viewer** at <https://cad.openie.dev/viewer/kicad?session=ID>
   — live KiCad PCB viewer for any MCP session.
 
+What the rest of the industry now ships is the loop — generate, check,
+repair — and openie-cad ships it too, as propose / certify / commit with
+background jobs and cancellation. What no other CAD ships, as of November
+2026, is the receipt: a content-addressed packet carrying the design with
+its model hash, certification verdicts with receipts, and a measured energy
+figure for the solve (1.69648 J for the reference plate pack, November 2026).
+The agent layer is the table; the receipt and the joules are the stakes.
+
 ## What's substrate-native vs commercial
 
-openie-cad ships several algorithms that, as of June 2026, exist in **no
-other open-source codebase under an MIT/Apache license**:
+openie-cad ships several algorithms implemented in-tree. Status of this
+table: November 2026.
 
 | Algorithm | Paper / Origin | Where in substrate |
 |---|---|---|
