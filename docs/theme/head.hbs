@@ -1,0 +1,95 @@
+<script type="module" src="https://research.openie.dev/live/openie-ecosystem-dock.js"></script>
+<style>
+  #mdbook-menu-bar .right-buttons {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+  .oe-mdbook-links {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.55rem;
+    margin-right: 0.5rem;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-size: 11px;
+    line-height: 1;
+    vertical-align: middle;
+  }
+  .oe-mdbook-links a.oe-mdb-a {
+    color: #00d4aa !important;
+    text-decoration: none;
+    padding: 0.25rem 0.35rem;
+    border-radius: 4px;
+    white-space: nowrap;
+  }
+  .oe-mdbook-links a.oe-mdb-a.oe-amber {
+    color: #f59e0b !important;
+  }
+  .oe-mdbook-links a.oe-mdb-a:hover {
+    text-decoration: underline;
+    opacity: 0.9;
+  }
+  .oe-mdbook-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-family: inherit;
+    font-size: 11px;
+    color: #00d4aa;
+    background: rgba(0, 212, 170, 0.1);
+    border: 1px solid rgba(0, 212, 170, 0.42);
+    border-radius: 5px;
+    padding: 0.26rem 0.55rem;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .oe-mdbook-live:hover {
+    background: rgba(0, 212, 170, 0.2);
+    border-color: #00d4aa;
+  }
+  @media (max-width: 760px) {
+    .oe-mdbook-links .oe-hide-sm {
+      display: none;
+    }
+  }
+  @media print {
+    .oe-mdbook-links {
+      display: none !important;
+    }
+  }
+</style>
+<template id="oe-mdbook-tpl">
+  <div id="oe-mdbook-links" class="oe-mdbook-links" role="navigation" aria-label="OpenIE Ecosystem">
+    <a href="https://blog.openie.dev" class="oe-mdb-a oe-amber oe-hide-sm" title="OpenIE Chronicle (57 Entries)">Chronicle (57)</a>
+    <a href="https://blog.openie.dev/verification/" class="oe-mdb-a oe-hide-sm" title="External Verification &amp; Replication">Replicate</a>
+    <a href="https://research.openie.dev" class="oe-mdb-a oe-hide-sm" title="OpenIE Research">Research</a>
+    <button
+      type="button"
+      data-openie-live-trigger
+      aria-label="Open Live Voice Call and Video Mode (Cmd+Shift+V)"
+      title="Voice Call &amp; Video Mode (⌘⇧V)"
+      onclick="const e=event;setTimeout(()=>{if(!e.defaultPrevented&&!document.querySelector('body > [id*=&quot;openie&quot;],body > [class*=&quot;openie&quot;],[data-openie-dock]')){window.location.href='https://research.openie.dev/live/?surface=knowledge';}},60)"
+      class="oe-mdbook-live"
+    >
+      <span aria-hidden="true">&#128222;</span> Live
+    </button>
+  </div>
+</template>
+<script>
+  (function () {
+    function mountNav() {
+      if (document.getElementById('oe-mdbook-links')) return;
+      var rb = document.querySelector('#mdbook-menu-bar .right-buttons') || document.querySelector('.right-buttons');
+      var tpl = document.getElementById('oe-mdbook-tpl');
+      if (rb && tpl && tpl.content) {
+        rb.insertBefore(tpl.content.cloneNode(true), rb.firstChild);
+      }
+    }
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', mountNav);
+    } else {
+      mountNav();
+    }
+  })();
+</script>
